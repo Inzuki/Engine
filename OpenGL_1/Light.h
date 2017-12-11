@@ -86,6 +86,7 @@ class DirectionalLight {
 		DirectionalLight(Light light, glm::vec3 direction){
 			this->light = light;
 			this->direction = direction;
+			//this->light.set_shadow_info(*new ShadowInfo(glm::ortho(-40, 40, -40, 40, -40, 40)));
 		}
 
 		void set_light(Light light){
@@ -107,6 +108,7 @@ class DirectionalLight {
 
 class PointLight {
 	private:
+		static const int COLOR_DEPTH = 256;
 		Light light;
 		glm::vec3 position;
 		Attenuation attenuation;
@@ -118,11 +120,12 @@ class PointLight {
 			range = 10.f;
 		}
 
-		PointLight(Light light, Attenuation attenuation, glm::vec3 position, float range){
+		PointLight(Light light, Attenuation attenuation, glm::vec3 position){
 			this->light = light;
 			this->attenuation = attenuation;
 			this->position = position;
-			this->range = range;
+			
+			calculate_range();
 		}
 
 		void set_light(Light light){
@@ -135,10 +138,15 @@ class PointLight {
 
 		void set_attenuation(Attenuation attenuation){
 			this->attenuation = attenuation;
+			calculate_range();
 		}
 
-		void set_range(float range){
-			this->range = range;
+		void calculate_range(){
+			float a = attenuation.get_exponent();
+			float b = attenuation.get_linear();
+			float c = attenuation.get_constant() - COLOR_DEPTH * light.get_intensity() * glm::max(light.get_color().x, glm::max(light.get_color().y, light.get_color().z));
+
+			this->range = (float)((-b + sqrt(b * b - 4 * a * c)) / (2 * a));
 		}
 
 		Light get_light(){

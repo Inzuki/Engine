@@ -19,7 +19,6 @@ int main(){
 	// initialize GLEW
 	glewExperimental = GL_TRUE;
 	glewInit();
-	glViewport(0, 0, window.getSize().x, window.getSize().y);
 
 	Engine engine(window);
 	engine.run(window);

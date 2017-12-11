@@ -14,6 +14,8 @@ class Mesh {
 	public:
 		Mesh(){
 			material.set_color(glm::vec3(1.f));
+			material.set_specular_intensity(1.f);
+			material.set_specular_exponent(8.f);
 		}
 
 		void load_mesh(const char *objName){
@@ -90,7 +92,6 @@ class Mesh {
 					fgets(garbage, 1024, file);
 				}
 			}
-
 			fclose(file);
 
 			for(unsigned int i = 0; i < vertIndices.size(); i++){
@@ -174,13 +175,10 @@ class Plane {
 		Plane(){
 			float vertices[] = {
 				// positions		 normals			texture coords
-				 1.0f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-				-1.0f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
+				 1.0f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f,  3.0f, 0.0f,
+				-1.0f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 3.0f,
 				-1.0f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-
-				// 1.0f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-				 1.0f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-				//-1.0f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f
+				 1.0f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  3.0f, 3.0f
 			};
 			unsigned int indices[] = {
 				0, 1, 2, // first Triangle

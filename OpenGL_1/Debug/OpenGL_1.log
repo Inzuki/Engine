@@ -1,4 +1,4 @@
-﻿Build started 12/5/2017 12:11:03 PM.
+﻿Build started 12/10/2017 4:28:32 PM.
      1>Project "C:\Users\Inzuki\Desktop\Game-master\OpenGL_1\OpenGL_1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\freetype-2.5.5\include" /I"C:\Users\Inzuki\Downloads\assimp-3.1.1\assimp-3.1.1\include" /IC:\GLM\glm /I"C:\GLEW\glew-1.12.0\include" /I"C:\SFML 2.2 x32\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Main.cpp
@@ -10,4 +10,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.59
+Time Elapsed 00:00:02.80

@@ -1,58 +1,34 @@
-﻿#version 330 core
+﻿
+#version 330 core
+#include "lighting.glh"
 
 in vec2 tex_out;
 in vec3 norm_out;
 in vec3 worldPos;
+in vec4 shadow_coord;
 
 out vec4 fragColor;
 
-struct BaseLight {
-	vec3 color;
-	float intensity;
-};
-
-struct DirectionalLight {
-	BaseLight base;
-	vec3 direction;
-};
-
-uniform vec3 eyePos;
-
 uniform sampler2D diffuse;
-
-uniform float specular_intensity;
-uniform float specular_power;
+uniform sampler2D shadow_map;
 
 uniform DirectionalLight directional_light;
 
-vec4 calc_light(BaseLight base, vec3 direction, vec3 normal){
-	float diffuse_factor = dot(normal, -direction);
-	vec4 diffuse_color = vec4(0.0, 0.0, 0.0, 0.0);
-	vec4 specular_color = vec4(0.0, 0.0, 0.0, 0.0);
-	
-	if(diffuse_factor > 0.0){
-		diffuse_color = vec4(base.color, 1.0) * base.intensity * diffuse_factor;
-		
-		// specular calculation
-		vec3 direction_to_eye = normalize(eyePos - worldPos);
-		vec3 reflect_direction = normalize(reflect(direction, normal));
-		float specular_factor = dot(direction_to_eye, reflect_direction);
-		specular_factor = pow(specular_factor, specular_power);
-		if(specular_factor > 0.0){
-			specular_color = vec4(base.color, 1.0) * specular_intensity * specular_factor;
-		}
-	}
-	
-	return diffuse_color + specular_color;
-}
-
-vec4 calc_directional_light(DirectionalLight directional_light, vec3 normal){
-	return calc_light(directional_light.base, -directional_light.direction, normal);
+float calc_shadow(){
+	vec3 proj_coords = (shadow_coord.xyz / shadow_coord.w) * vec3(0.5) + vec3(0.5);
+	return step(proj_coords.z, texture(shadow_map, proj_coords.xy).r);
 }
 
 /*****************\
 |* main function *|
 \*****************/
 void main(){
-	fragColor = texture(diffuse, tex_out.xy) * calc_directional_light(directional_light, normalize(norm_out));
+	vec4 lighting = calc_directional_light(
+						directional_light,
+						normalize(norm_out),
+						worldPos
+					) *
+					calc_shadow();
+					
+	fragColor = lighting * texture(diffuse, tex_out.xy);
 }

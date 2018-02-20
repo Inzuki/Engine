@@ -37,11 +37,9 @@ class Shader {
 
 			addUniform("tex"); // texture - for ambient shader
 			addUniform("diffuse"); // texture - for non-forward-ambient shaders
-			addUniform("shadow_map"); // texture - for non-forward-ambient shaders
 
 			setUniformi("tex", 0);
 			setUniformi("diffuse", 0);
-			setUniformi("shadow_map", 1);
 		}
 
 		void bind(){
@@ -52,9 +50,9 @@ class Shader {
 			setUniform("transform", transform);
 			setUniform("eyePos", eyePos);
 				
-			setUniformf("specular_intensity", material.get_specular_intensity());
-			setUniformf("specular_power", material.get_specular_exponent());
-			setUniform("base_color", material.get_color());
+			//setUniformf("specular_intensity", material.get_specular_intensity());
+			//setUniformf("specular_power", material.get_specular_exponent());
+			//setUniform("base_color", material.get_color());
 		}
 
 		void update_matrices(glm::mat4 &view_mat, glm::mat4 &projection_mat){
@@ -193,6 +191,14 @@ class Shader {
 		void compileShader(){
 			glLinkProgram(program);
 			glValidateProgram(program);
+
+			int success;
+			GLchar infoLog[1024];
+			glGetProgramiv(program, GL_LINK_STATUS, &success);
+            if(!success){
+                glGetProgramInfoLog(program, 1024, NULL, infoLog);
+                std::cout << "ERROR: Program linker issue.\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+            }
 		}
 
 		// this helps load up the structs from the shader for automatic uniform creation
@@ -347,19 +353,26 @@ class Shader {
 			char const *sourcePtr = shader_code.c_str();
 			glShaderSource(shader, 1, &sourcePtr, NULL);
 			glCompileShader(shader);
+
+			// check for errors in the shader code
+			int success;
+			char infoLog[1024];
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+            if(!success){
+                glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+                std::cout << "ERROR: GLSL error of type: " << type << ". Info:\n" << infoLog << "\n -- --------------------------------------------------- --\n\n" << std::endl;
+            }
+
 			glAttachShader(program, shader);
+
+			if(type == GL_FRAGMENT_SHADER)
+				glLinkProgram(program);
 		}
 };
 
-class ShadowMap : public Shader {
-	public:
-		ShadowMap(){
-			addVertexShader("shadow-map-generator.vs");
-			addFragmentShader("shadow-map-generator.fs");
-			compileShader();
-		}
-};
-
+/**********************************\
+|* new shaders for shadow mapping *|
+\**********************************/
 class DebugShader : public Shader {
 	public:
 		DebugShader(){
@@ -377,6 +390,43 @@ class DepthShader : public Shader {
 		DepthShader(){
 			addVertexShader("simple_depth.vs");
 			addFragmentShader("simple_depth.fs");
+			compileShader();
+		}
+};
+
+class PointDepthShader : public Shader {
+	public:
+		PointDepthShader(){
+			addVertexShader("sm/cm_vertex.vs");
+			addFragmentShader("sm/cm_fragment.fs");
+			addGeometryShader("sm/cm_geometry.gs");
+			compileShader();
+		}
+};
+
+class AmbientShader : public Shader {
+	public:
+		AmbientShader(){
+			addVertexShader("sm/ambient.vs");
+			addFragmentShader("sm/ambient.fs");
+			compileShader();
+		}
+};
+
+class DirectionalShader : public Shader {
+	public:
+		DirectionalShader(){
+			addVertexShader("sm/directional.vs");
+			addFragmentShader("sm/directional.fs");
+			compileShader();
+		}
+};
+
+class PointShader : public Shader {
+	public:
+		PointShader(){
+			addVertexShader("sm/point.vs");
+			addFragmentShader("sm/point.fs");
 			compileShader();
 		}
 };

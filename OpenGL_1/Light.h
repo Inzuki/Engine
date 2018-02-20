@@ -81,12 +81,13 @@ class DirectionalLight {
 		glm::vec3 direction;
 
 	public:
-		DirectionalLight(){}
+		DirectionalLight(){
+			this->direction = glm::vec3(0.f);
+		}
 
 		DirectionalLight(Light light, glm::vec3 direction){
 			this->light = light;
 			this->direction = direction;
-			//this->light.set_shadow_info(*new ShadowInfo(glm::ortho(-40, 40, -40, 40, -40, 40)));
 		}
 
 		void set_light(Light light){
@@ -99,6 +100,10 @@ class DirectionalLight {
 
 		void set_direction(glm::vec3 direction){
 			this->direction = direction;
+		}
+
+		glm::vec3 get_position(){
+			return direction;
 		}
 
 		glm::vec3 get_direction(){
